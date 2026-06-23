@@ -29,6 +29,7 @@ class Data:
         self.season = season
         self.statistic = statistic
         self.data = pd.DataFrame()
+        self.available_teams = []
     
     
     @staticmethod
@@ -85,11 +86,18 @@ class Data:
         pass
 
     def get_available_teams(self):
-        pass
+        """ Method to obtain all the available teams in a particular league and season"""
+        home_teams = list(self.data["team_home"])
+        away_teams = list(self.data["team_away"])
+
+        # all_teams = set(home_teams.extend(away_teams))
+        # len(all_teams)
+        all_teams = list(set(home_teams + away_teams))
+        self.available_teams.extend(all_teams)
 
 
 arsenal = Data("Arsenal","ENG Premier League","2021-2022","Shots On Target")
 
 arsenal.data_loader()
-leag_data = arsenal.get_league_data()
-print(leag_data)
+arsenal.get_available_teams()
+print(arsenal.available_teams)
