@@ -58,32 +58,65 @@ class Data:
         new_df = df[['team_home','team_away','fthg','ftag','ftr','hthg','htag','htr','hs','as','hst','ast','hf','af','hc','ac','hy','ay','hr','ar',]].copy()
         self.data = pd.concat([self.data, new_df], ignore_index=True)
 
+    @staticmethod
+    def get_stats(home_label:str, away_label:str, summary:pd.DataFrame| pd.Series,statistic) -> dict[str,float|int]:
+        """ Method to obtain league wide summary for the selected statistic
+        Returns a dict of the statistic
+        """
+        league_dict = {}
+
+        # obtain avearge values for home and away
+        league_dict[f"{home_label} Home Average"] = round(summary.loc["mean",mapper[statistic][0]].item(),2) # type: ignore
+        league_dict[f"{away_label} Away Average"] = round(summary.loc["mean",mapper[statistic][1]].item(),2) # type: ignore
+
+        # Obtain minimum values for home and away
+        league_dict[f"{home_label} Home Minimum"] = round(summary.loc["min",mapper[statistic][0]].item() ,2)# type: ignore
+        league_dict[f"{away_label} Away Minimum"] = round(summary.loc["min",mapper[statistic][1]].item() ,2)# type: ignore
+
+        # Obtain maximum values for home and away
+        league_dict[f"{home_label} Home Maximum"] = round(summary.loc["max",mapper[statistic][0]].item() ,2)# type: ignore
+        league_dict[f"{away_label} Away Maximum"] = round(summary.loc["max",mapper[statistic][1]].item() ,2)# type: ignore
+
+        # Obtain std values for home and away
+        league_dict[f"{home_label} Home std"] = round(summary.loc["std",mapper[statistic][0]].item() ,2)# type: ignore
+        league_dict[f"{away_label} Away std"] = round(summary.loc["std",mapper[statistic][1]].item() ,2)# type: ignore
+
+        # Obtain 25 percentile values for home and away
+        league_dict[f"{home_label} Home 25%"] = round(summary.loc["25%",mapper[statistic][0]].item() ,2)# type: ignore
+        league_dict[f"{away_label} Away 25%"] = round(summary.loc["25%",mapper[statistic][1]].item() ,2)# type: ignore
+
+        # Obtain 50 percentile values for home and away
+        league_dict[f"{home_label} Home 50%"] = round(summary.loc["50%",mapper[statistic][0]].item() ,2)# type: ignore
+        league_dict[f"{away_label} Away 50%"] = round(summary.loc["50%",mapper[statistic][1]].item() ,2)# type: ignore
+        
+        # Obtain 75 percentile values for home and away
+        league_dict[f"{home_label} Home 75%"] = round(summary.loc["75%",mapper[statistic][0]].item() ,2)# type: ignore
+        league_dict[f"{away_label} Away 75%"] = round(summary.loc["75%",mapper[statistic][1]].item() ,2)# type: ignore
+
+
+        return league_dict
+        
+
     def get_league_data(self) -> dict:
         """ Method to obtain league wide summary for the selected statistic
         Returns a dict of the statistic
         """
         
-        league_dict = {}
-        
         # obtain league descriptive stats
         summary = self.data.describe()
 
-        # obtain avearge values for home and away
-        league_dict["Home Average"] = round(summary.loc["mean",mapper[self.statistic][0]].item(),2) # type: ignore
-        league_dict["Away Average"] = round(summary.loc["mean",mapper[self.statistic][1]].item(),2) # type: ignore
+        league_data = self.get_stats("League","League",summary,self.statistic)
+        return league_data
 
-        # Obtain minimum values for home and away
-        league_dict["Home Minimum"] = round(summary.loc["min",mapper[self.statistic][0]].item() ,2)# type: ignore
-        league_dict["Away Minimum"] = round(summary.loc["min",mapper[self.statistic][1]].item() ,2)# type: ignore
+    def get_team_data(self) -> tuple[dict[str,float|int], dict[str,float|int] ]:
+        home_table = self.data.loc[self.data["team_home"] == self.team]
+        away_table = self.data.loc[self.data["team_away"] == self.team]
+        
+        home_summary = home_table.describe()
+        away_summary = away_table.describe()
 
-        # Obtain maximum values for home and away
-        league_dict["Home Maximum"] = round(summary.loc["max",mapper[self.statistic][0]].item() ,2)# type: ignore
-        league_dict["Away Maximum"] = round(summary.loc["max",mapper[self.statistic][1]].item() ,2)# type: ignore
+        return (self.get_stats(self.team, "Opponent", home_summary, self.statistic), self.get_stats("Opponent",self.team,away_summary, self.statistic) )
 
-        return league_dict
-
-    def get_team_data(self):
-        pass
 
     def get_available_teams(self):
         """ Method to obtain all the available teams in a particular league and season"""
@@ -94,10 +127,3 @@ class Data:
         # len(all_teams)
         all_teams = list(set(home_teams + away_teams))
         self.available_teams.extend(all_teams)
-
-
-arsenal = Data("Arsenal","ENG Premier League","2021-2022","Shots On Target")
-
-arsenal.data_loader()
-arsenal.get_available_teams()
-print(arsenal.available_teams)
