@@ -30,11 +30,15 @@ class Data:
         self.statistic = statistic
         self.data = pd.DataFrame()
         self.available_teams = []
-    
+        self.league_data = {}
+        self.home_data = {}
+        self.away_data = {}
+        self.positive = ["Goals FT", "Goals HT","Shots","Shots On Target", "Corners"]
+        self.negative = ["Fouls","Yellow Cards", "Red Cards"]
     
     @staticmethod
     @lru_cache(maxsize=20)
-    def get_data(leg,sea):
+    def __get_data(leg,sea):
         """ caching enabled Method to obtain league data from a specified season, 
         
         args:
@@ -54,7 +58,7 @@ class Data:
             self.league
             self.season
         """
-        df = self.get_data(self.league, self.season)    
+        df = self.__get_data(self.league, self.season)    
         new_df = df[['team_home','team_away','fthg','ftag','ftr','hthg','htag','htr','hs','as','hst','ast','hf','af','hc','ac','hy','ay','hr','ar',]].copy()
         self.data = pd.concat([self.data, new_df], ignore_index=True)
 
@@ -97,7 +101,7 @@ class Data:
         return league_dict
         
 
-    def get_league_data(self) -> dict:
+    def get_league_data(self):
         """ Method to obtain league wide summary for the selected statistic
         Returns a dict of the statistic
         """
@@ -106,16 +110,18 @@ class Data:
         summary = self.data.describe()
 
         league_data = self.get_stats("League","League",summary,self.statistic)
-        return league_data
+        self.league_data = league_data
 
-    def get_team_data(self) -> tuple[dict[str,float|int], dict[str,float|int] ]:
+    def get_team_data(self):
+        """ Method to obtain team specific summary for the selected statistic"""
         home_table = self.data.loc[self.data["team_home"] == self.team]
         away_table = self.data.loc[self.data["team_away"] == self.team]
         
         home_summary = home_table.describe()
         away_summary = away_table.describe()
 
-        return (self.get_stats(self.team, "Opponent", home_summary, self.statistic), self.get_stats("Opponent",self.team,away_summary, self.statistic) )
+        self.home_data = self.get_stats(self.team, "Opponent", home_summary, self.statistic) 
+        self.away_data = self.get_stats("Opponent",self.team,away_summary, self.statistic) 
 
 
     def get_available_teams(self):
@@ -127,3 +133,9 @@ class Data:
         # len(all_teams)
         all_teams = list(set(home_teams + away_teams))
         self.available_teams.extend(all_teams)
+
+   
+            
+
+
+    

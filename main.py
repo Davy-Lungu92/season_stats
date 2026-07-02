@@ -1,4 +1,6 @@
-# import argparse
+import argparse
+from load_data import Data
+
 
 # def main():
 #     print("Hello from season-stats!")
