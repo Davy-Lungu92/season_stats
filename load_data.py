@@ -134,8 +134,3 @@ class Data:
         all_teams = list(set(home_teams + away_teams))
         self.available_teams.extend(all_teams)
 
-   
-            
-
-
-    
