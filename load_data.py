@@ -63,7 +63,7 @@ class Data:
         self.data = pd.concat([self.data, new_df], ignore_index=True)
 
     @staticmethod
-    def get_stats(home_label:str, away_label:str, summary:pd.DataFrame| pd.Series,statistic) -> dict[str,float|int]:
+    def __get_stats(home_label:str, away_label:str, summary:pd.DataFrame| pd.Series,statistic) -> dict[str,float|int]:
         """ Method to obtain league wide summary for the selected statistic
         Returns a dict of the statistic
         """
@@ -109,7 +109,7 @@ class Data:
         # obtain league descriptive stats
         summary = self.data.describe()
 
-        league_data = self.get_stats("League","League",summary,self.statistic)
+        league_data = self.__get_stats("League","League",summary,self.statistic)
         self.league_data = league_data
 
     def get_team_data(self):
@@ -120,8 +120,8 @@ class Data:
         home_summary = home_table.describe()
         away_summary = away_table.describe()
 
-        self.home_data = self.get_stats(self.team, "Opponent", home_summary, self.statistic) 
-        self.away_data = self.get_stats("Opponent",self.team,away_summary, self.statistic) 
+        self.home_data = self.__get_stats(self.team, "Opponent", home_summary, self.statistic) 
+        self.away_data = self.__get_stats("Opponent",self.team,away_summary, self.statistic) 
 
 
     def get_available_teams(self):

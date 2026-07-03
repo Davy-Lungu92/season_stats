@@ -1,5 +1,7 @@
 import argparse
 from load_data import Data
+from compare_stats import organizer
+from display import create_table
 
 
 # def main():
@@ -9,24 +11,24 @@ from load_data import Data
 # if __name__ == "__main__":
 #     main()
 
-from rich.console import Console
-from rich.table import Table
+chelsea = Data(league="ENG Premier League",season="2025-2026",statistic="Shots On Target",team="Chelsea")
 
-# Initialize the console
-console = Console()
+chelsea.data_loader()
+chelsea.get_league_data()
+chelsea.get_team_data()
+chelsea.get_available_teams()
 
-# Create a basic table object
-table = Table(title="Server Status Overview")
+league_stats = chelsea.league_data
+home_stats = chelsea.home_data
+away_stats = chelsea.away_data
 
-# Define the columns
-table.add_column("Server ID", justify="center", style="cyan", no_wrap=True)
-table.add_column("Location", style="magenta")
-table.add_column("Uptime", justify="right", style="green")
+print(home_stats)
+print()
+print(away_stats)
+print(league_stats)
+print()
 
-# Add the rows of data
-table.add_row("SRV-01", "New York", "99.9%")
-table.add_row("SRV-02", "London", "98.5%")
-table.add_row("SRV-03", "Tokyo", "99.2%")
-
-# Print the table to the terminal
-console.print(table)
+# data = organizer(away_data=away_stats,home_data=home_stats,league_data=league_stats,team="Chelsea")
+# print()
+# print()
+# create_table(data=data,place="Home",season="2025-2026",stat="Shots On Target",team="Chelsea")
