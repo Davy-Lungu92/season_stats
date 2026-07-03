@@ -1,5 +1,5 @@
 # Season Stats
-This project allows users to obtain specific statistics for a team(s) from selected leagues and Seasons(years)
+This project allows users to obtain specific a statistic for a team(s) from selected leagues and Seasons(years)
 
 ## Features
 - Select a League, e.g Premier League
